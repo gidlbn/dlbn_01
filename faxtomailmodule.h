@@ -19,14 +19,16 @@ public:
     QString FIFilePath,FDFilePath;//FaxInfoFilePath,FaxDateFilePath
     QDir FIFolder;//FaxInfoFolder
     QDir FDFolder;//FaxDateFolder
-    QString MailServer
-
-
+    QString MailServer,MailFrom,MailTo,MailSubject,MailBody,MailAttachment;
+    QString MailUsername,MailPassword;
+    qint8 CheckMailServerInfo();
+    qint8 SetMailServerInfo();
 
 signals:
 
 private slots:
     qint8 Process();
+
 
 private:
     bool FaxIdentify(QString FilePath,QString &Addr);

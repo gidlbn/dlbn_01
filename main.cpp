@@ -8,6 +8,6 @@ int main(int argc, char *argv[])
     MainWindow w;
 
     w.show();
-    FaxToMailModule FaxToMail;
+    FaxToMailModule FaxToMailProcess;
     return a.exec();
 }

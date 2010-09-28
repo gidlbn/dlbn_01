@@ -1,4 +1,5 @@
 #include "faxtomailmodule.h"
+#include "smtp.h"
 #include <QtCore/QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -11,9 +12,13 @@
 FaxToMailModule::FaxToMailModule(QWidget *parent) :
     QWidget(parent)
 {
+    MailServer="smtp.sina.com";
+    MailPassword="si123456";
+    MailUsername="fax_test@sina.com";
+    MailFrom="fax_test@sina.com";
     FaxToMailTimer.setSingleShot(true);
     connect(&FaxToMailTimer, SIGNAL(timeout()), this, SLOT(Process()));
-    FaxToMailTimer.start(5*1000);
+    FaxToMailTimer.start(1*1000);
 }
 
 
@@ -55,11 +60,11 @@ qint8 FaxToMailModule::Process()
                 FDFilePath.clear();
                 FDFilePath.append(FDFolder.absolutePath()+"/"+FIfileinfo.first());
                 qDebug()<<FDFilePath;
-                QString MailAddr;
-                Re=FaxIdentify(FDFilePath,MailAddr);
+                Re=FaxIdentify(FDFilePath,MailTo);
                 if (Re==true)
                 {
                    qDebug()<<"begin to print\n";
+                   /*
                    QPrinter printer;
                    printer.setOutputFormat(QPrinter::PdfFormat);
                    printer.setOrientation(QPrinter::Landscape);
@@ -74,13 +79,40 @@ qint8 FaxToMailModule::Process()
                    }
                     painter.drawImage(0,0,Image);
                     painter.end();
+                    */
                     QFile PDFFile("/tmp/nonwritable.pdf");
                     if(PDFFile.open(QIODevice::ReadOnly|QIODevice::Text))
                     {
-                        tmp=PDFFile.readAll();
-                        PDFFile.close();
-                        tmp.toBase64();
+                        QByteArray ls;
 
+                        ls=PDFFile.read(3);
+                        QString ls2;
+
+                        qDebug()<<ls.toBase64();
+
+                        if (this->CheckMailServerInfo()<0)
+                        {
+                            qDebug()<<"Error:MailServerInfo="<<this->CheckMailServerInfo();
+                        }
+                        else
+                        {
+                            QList<QString> bcc;
+                            bcc<<"dlbn@sina.com";
+                            /*
+                            Smtp mail(this->MailServer,this->MailFrom,this->MailTo,bcc,"test","test",true,QString(tmp.toBase64()));
+                            mail.current_user_name=this->MailUsername;
+                            mail.current_password=this->MailPassword;
+                            mail.send();
+                            */
+                            //Smtp *smtp = new Smtp("smtp.sina.com","fax_test@sina.com","dlbn126@126.com",bcc,"Testmail","Testmail",true,tmp.toBase64());
+                                //smtp->readyRead();
+                                //smtp->current_user_name="fax_test@sina.com";
+                                //smtp->current_password="si123456";
+                                //asmtp->send();
+
+
+                        }
+                        PDFFile.close();
 
                     }
                     else
@@ -106,4 +138,18 @@ qint8 FaxToMailModule::Process()
     //}
     //FaxToMailTimer.start(3*1000);
     qDebug()<<"FaxToMailProcess End\n";
+    return true;
+}
+
+qint8 FaxToMailModule::CheckMailServerInfo()
+{
+    if (this->MailServer.isNull())     return -1;
+    if (this->MailPassword.isNull())   return -2;
+    if (this->MailUsername.isNull())   return -3;
+    return true;
+}
+
+qint8 FaxToMailModule::SetMailServerInfo()
+{
+    return true;
 }

@@ -1,3 +1,10 @@
+#include <QtNetwork/QTcpSocket>
+#include <QTextStream>
+#include <QDate>
+#include <QTime>
+#include <QDateTime>
+#include <QLocale>
+#include <QList>
 #include "smtp.h"
 
 
@@ -56,7 +63,7 @@ Smtp::Smtp( const QString &server, const QString &from, const QString &to, const
 
 		this->server = server;
         To = to;
-        qDebug()<<"Smtp::Smtp finished!!";
+        //qDebug()<<"Smtp::Smtp finished!!";
 }
 
 void Smtp::send()

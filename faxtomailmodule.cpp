@@ -62,23 +62,20 @@ qint8 FaxToMailModule::Process()
                    qDebug()<<"begin to print\n";
                    QPrinter printer;
                    printer.setOutputFormat(QPrinter::PdfFormat);
+                   printer.setOrientation(QPrinter::Landscape);
+                   printer.setPageSize(QPrinter::A2);
                    printer.setOutputFileName("/tmp/nonwritable.pdf");
                    //QPrintPreviewDialog preview(&printer, this);
                    QPainter painter;
-
+                   QImage Image(FDFilePath);
+                    //QRectF target(10.0, 20.0, 80.0, 60.0);
 
                     if (! painter.begin(&printer))
                     { // failed to open file
                         qWarning("failed to open file, is it writable?");
                         return 1;
                     }
-                    painter.drawText(10, 10, "Test");
-                    if (! printer.newPage())
-                    {
-                        qWarning("failed in flushing page to disk, disk full?");
-                        return 1;
-                    }
-                    painter.drawText(10, 10, "Test 2");
+                    painter.drawImage(0,0,Image);
                     painter.end();
 
 

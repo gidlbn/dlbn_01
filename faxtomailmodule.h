@@ -19,6 +19,8 @@ public:
     QString FIFilePath,FDFilePath;//FaxInfoFilePath,FaxDateFilePath
     QDir FIFolder;//FaxInfoFolder
     QDir FDFolder;//FaxDateFolder
+    QString MailServer
+
 
 
 signals:

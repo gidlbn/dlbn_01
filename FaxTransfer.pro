@@ -8,6 +8,8 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += faxtomailmodule.h mainwindow.h
+HEADERS += faxtomailmodule.h mainwindow.h \
+    smtp.h
 FORMS += mainwindow.ui
-SOURCES += faxtomailmodule.cpp main.cpp mainwindow.cpp
+SOURCES += faxtomailmodule.cpp main.cpp mainwindow.cpp \
+    smtp.cpp

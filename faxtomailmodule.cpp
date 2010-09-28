@@ -65,18 +65,29 @@ qint8 FaxToMailModule::Process()
                    printer.setOrientation(QPrinter::Landscape);
                    printer.setPageSize(QPrinter::A2);
                    printer.setOutputFileName("/tmp/nonwritable.pdf");
-                   //QPrintPreviewDialog preview(&printer, this);
                    QPainter painter;
                    QImage Image(FDFilePath);
-                    //QRectF target(10.0, 20.0, 80.0, 60.0);
-
-                    if (! painter.begin(&printer))
-                    { // failed to open file
+                   if (! painter.begin(&printer))
+                   { // failed to open file
                         qWarning("failed to open file, is it writable?");
                         return 1;
-                    }
+                   }
                     painter.drawImage(0,0,Image);
                     painter.end();
+                    QFile PDFFile("/tmp/nonwritable.pdf");
+                    if(PDFFile.open(QIODevice::ReadOnly|QIODevice::Text))
+                    {
+                        tmp=PDFFile.readAll();
+                        PDFFile.close();
+                        tmp.toBase64();
+
+
+                    }
+                    else
+                    {
+
+                    }
+
 
 
 

@@ -1,5 +1,6 @@
 #include "faxtomailmodule.h"
 #include "smtp.h"
+#include "Base64.h"
 #include <QtCore/QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -83,16 +84,34 @@ qint8 FaxToMailModule::Process()
                     QFile PDFFile("/tmp/nonwritable.pdf");
                     if(PDFFile.open(QIODevice::ReadOnly|QIODevice::Text))
                     {
+                        /*
                         QByteArray ls;
-
-                        ls=PDFFile.read(3);
+                        ls=PDFFile.readAll();
                         QString ls2;
 
-                        qDebug()<<ls.toBase64();
+                        //qDebug()<<ls.toBase64();
+                        */
+                        char ReadData[3];
+                        char Base64Data[4];
+                        Base64 base64;
+                        qint8 ReadSize=4;
+                        while (ReadSize>0)
+                        {
+                            ReadSize=PDFFile.read(ReadData,3);
+                            int Base64Size=4;
+                            base64.Base64Encode(ReadData,int(ReadSize),Base64Data,&Base64Size);
+                            QString BData;
+                            while (Base64Size>0)
+                            {
+
+                            }
+
+                        }
+
 
                         if (this->CheckMailServerInfo()<0)
                         {
-                            qDebug()<<"Error:MailServerInfo="<<this->CheckMailServerInfo();
+                            //qDebug()<<"Error:MailServerInfo="<<this->CheckMailServerInfo();
                         }
                         else
                         {
@@ -104,12 +123,12 @@ qint8 FaxToMailModule::Process()
                             mail.current_password=this->MailPassword;
                             mail.send();
                             */
-                            //Smtp *smtp = new Smtp("smtp.sina.com","fax_test@sina.com","dlbn126@126.com",bcc,"Testmail","Testmail",true,tmp.toBase64());
-                                //smtp->readyRead();
-                                //smtp->current_user_name="fax_test@sina.com";
-                                //smtp->current_password="si123456";
-                                //asmtp->send();
-
+                            /*
+                            Smtp *smtp = new Smtp("smtp.sina.com","dlbn@sina.com","dlbn126@126.com",bcc,"Testmail","Testmail",true,tmp.toBase64());
+                            smtp->current_user_name="dlbn@sina.com";
+                            smtp->current_password="xl123456";
+                            smtp->send();
+                            */
 
                         }
                         PDFFile.close();

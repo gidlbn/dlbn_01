@@ -201,6 +201,7 @@ void Smtp::readyRead()
     else if ( state == Mail && responseLine[0] == '5' )
     {
         QMessageBox::warning( 0, tr( "Error" ), tr( "User and PassWord are wrong!" ) );
+        this->socket->close();
     }
     else if ( state == Rcpt && responseLine[0] == '2' )
     {
@@ -249,14 +250,17 @@ void Smtp::readyRead()
         qDebug()<<"responseLine is"<<responseLine<<"\n";
         deleteLater();
         QMessageBox::warning( 0, tr( "Qt Mail Example" ), tr( "e_mail had sent\n" ) + response );
+        socket->close();
         return;
     }
     else
     {
         // something broke.
+        qDebug()<<"responseLine is"<<responseLine<<"\n";
+        //qDebug()<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
         QMessageBox::warning( 0, tr( "Qt Mail Example" ), tr( "Unexpected reply from SMTP server:\n\n" ) + response );
         emit status(-1);
-        state = Close;
+        socket->close();
     }
     response = "";
 }

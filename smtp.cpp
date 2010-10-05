@@ -10,60 +10,59 @@
 
 Smtp::Smtp( const QString &server, const QString &from, const QString &to, const QList<QString> &bcc, const QString &subject, const QString &body, const bool html ,const QString &attachment)
 {
-		socket = new QTcpSocket( this );
-		
-		connect( socket, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
-		connect( socket, SIGNAL( connected() ), this, SLOT( connected() ) );
-                connect( socket, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(errorReceived(QAbstractSocket::SocketError)));
-		connect( socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, 
-		SLOT(stateChanged(QAbstractSocket::SocketState)));       
-		connect(socket, SIGNAL(disconnected()), this, 
-		SLOT(disconnected()));; 
+    socket = new QTcpSocket( this );
 
-		//Generate date
-		QTime myTime = QDateTime::currentDateTime().toUTC().time();
-		QLocale myLocal = QLocale(QLocale::C);
-		QString date = myLocal.toString(QDate::currentDate(), "ddd, dd MMM yyyy ");
-		date += myLocal.toString(myTime, "hh:mm:ss");
-		date += " +0000 (UTC)";
-		
-		message = "To: " + to + "\n";
-		message.append("From: " + from + "\n");
-		message.append("Subject: " + subject + "\n");
-		message.append("Date: " + date + "\n");
-                /*
-                if(html)
-                {
-                        message.append("MIME-Version: 1.0 \n");
-                        message.append("Content-Type: text/plain; charset=\"iso-8859-1\"; format=flowed \n");
-                }
+    connect( socket, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+    connect( socket, SIGNAL( connected() ), this, SLOT( connected() ) );
+    connect( socket, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(errorReceived(QAbstractSocket::SocketError)));
+    connect( socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this,
+    SLOT(stateChanged(QAbstractSocket::SocketState)));
+    connect(socket, SIGNAL(disconnected()), this,
+    SLOT(disconnected()));;
 
-                message.append( body +"\n\n\n");
-                message.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) );
-                message.replace( QString::fromLatin1( "\r\n.\r\n" ),QString::fromLatin1( "\r\n..\r\n" ) );
-                */
-                if(html)
-                {
-                        message.append("Content-Type: application/octet-stream; name=\"Fax.pdf\" \n");
-                        message.append("Content-Description: Fax.pdf \n");
-                        message.append("Content-Disposition: attachment; filename=\"Fax.pdf\"; size=1955;creation-date=\"Thu, 05 Aug 2010 13:09:54 GMT\";modification-date=\"Thu, 05 Aug 2010 13:14:51 GMT\" \n");
-                        message.append("Content-Transfer-Encoding: base64 \n");
-                        message.append(attachment+"\n");
+    //Generate date
+    QTime myTime = QDateTime::currentDateTime().toUTC().time();
+    QLocale myLocal = QLocale(QLocale::C);
+    QString date = myLocal.toString(QDate::currentDate(), "ddd, dd MMM yyyy ");
+    date += myLocal.toString(myTime, "hh:mm:ss");
+    date += " +0000 (UTC)";
 
+    message = "To: " + to + "\n";
+    message.append("From: " + from + "\n");
+    message.append("Subject: " + subject + "\n");
+    message.append("Date: " + date + "\n");
+    message.append("MIME-Version: 1.0 \n");
 
-                }
-		message.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) );
-                message.replace( QString::fromLatin1( "\r\n.\r\n" ),QString::fromLatin1( "\r\n..\r\n" ) );
-                this->from = from;
-		
-		//Add to adress
-        rcpt = bcc;
-		rcpt.insert(0, to); 
-		rcptIndex = 0;
+    message.append("Content-Type: multipart/mixed;\n");
+    message.append("    boundary=\"=-mail_mix\"\n\n");
+    //test
+    message.append("--=-mail_mix\n");
+    message.append("Content-Type: text/plain;\n");
+    message.append("charset=\"GBK\"\n");
+    message.append("Content-Transfer-Encoding: base64 \n");
+    message.append("Content-Disposition: inline\n\n");
+    QByteArray ls;
+    ls.append(body);
+    message.append(ls.toBase64()+"\n\n\n");
+    message.append("--=-mail_mix\n");
+    //attachment
+    message.append("Content-Type: application/octet-stream; name=\"Fax.pdf\" \n");
+    message.append("Content-Description: Fax.pdf \n");
+    message.append("Content-Disposition: attachment; filename=\"Fax.pdf\"; size=1955;creation-date=\"Thu, 05 Aug 2010 13:09:54 GMT\";modification-date=\"Thu, 05 Aug 2010 13:14:51 GMT\" \n");
+    message.append("Content-Transfer-Encoding: base64 \n\n");
+    message.append(attachment+"\n");
+    message.append("--=-mail_mix--\n");
+    message.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) );
+    message.replace( QString::fromLatin1( "\r\n.\r\n" ),QString::fromLatin1( "\r\n..\r\n" ) );
+    this->from = from;
 
-		this->server = server;
-        To = to;
-        //qDebug()<<"Smtp::Smtp finished!!";
+    //Add to adress
+    rcpt = bcc;
+    rcpt.insert(0, to);
+    rcptIndex = 0;
+    this->server = server;
+    this->To = to;
+    //qDebug()<<"Smtp::Smtp finished!!";
 }
 
 void Smtp::send()
@@ -206,9 +205,12 @@ void Smtp::readyRead()
     else if ( state == Rcpt && responseLine[0] == '2' )
     {
 //        qDebug()<<"responseLine is"<<responseLine<<"\n";
-    	QString adress = rcpt[rcptIndex];
-//        *t << "RCPT TO:<" << rcpt[rcptIndex] << ">\r\n"; //
-        *t << "RCPT TO:<" << To << ">\r\n"; //        
+        for (rcptIndex=0;rcptIndex<=rcpt.size();rcptIndex++)
+        {
+            QString adress = rcpt[rcptIndex];
+            *t << "RCPT TO:<" << adress << ">\r\n"; //
+        }
+//        *t << "RCPT TO:<" << To << ">\r\n"; //
 //        rcptIndex++;
 		t->flush();
         emit status( 8 ); //Sending 5

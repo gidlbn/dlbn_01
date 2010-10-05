@@ -81,9 +81,9 @@ qint8 FaxToMailModule::Process()
                         return 1;
                    }
 
-                   QPixmap pixmapToShow = QPixmap::fromImage( Image.scaled(size(), Qt::KeepAspectRatio) );
-                   painter.drawPixmap(0,0, pixmapToShow);
-                   //painter.drawImage(0,0,Image);
+                   //QPixmap pixmapToShow = QPixmap::fromImage( Image.scaled(size(), Qt::KeepAspectRatio) );
+                   //painter.drawPixmap(0,0, pixmapToShow);
+                   painter.drawImage(0,0,Image);
                    /*
                    QFont font("Times",50);
                    QString text = tr("Hello World");
@@ -93,50 +93,17 @@ qint8 FaxToMailModule::Process()
                     */
                    painter.end();
 
-                    //QFile PDFFile("/tmp/nonwritable.pdf");
-                    QFile PDFFile("/root/Desktop/2006110204183415514.jpg");
-                    if(PDFFile.open(QIODevice::ReadOnly|QIODevice::Text))
+                    QFile PDFFile("/tmp/nonwritable.pdf");
+                    if(PDFFile.open(QIODevice::ReadOnly))
                     {
 
 
                         QByteArray ls;
                         ls=PDFFile.readAll();
-
-                        qDebug()<<"File Size="<<ls.size();
-                        this->MailAttachment.clear();
+                        PDFFile.close();
+                        //qDebug()<<"File Size="<<ls.size();
                         this->MailAttachment=ls.toBase64();
-                        QFile test("/tmp/test.jpg");
-                        test.open(QIODevice::ReadWrite);
-                        test.write(ls);
-                        test.close();
                         //qDebug()<<ls.toBase64();
-
-
-                        /*
-                        char ReadData[3];
-                        char Base64Data[4];
-                        Base64 base64;
-                        qint8 ReadSize=4;
-                        qint64 total;
-                        this->MailAttachment.clear();
-                        total=0;
-                        while (ReadSize>0)
-                        {
-                            ReadSize=PDFFile.read(ReadData,3);
-                            total+=ReadSize;
-                            int Base64Size=4;
-                            base64.Base64Encode(ReadData,int(ReadSize),Base64Data,&Base64Size);
-
-                            while (Base64Size>0)
-                            {
-                                this->MailAttachment.append(Base64Data[4-Base64Size]);
-                                Base64Size--;
-                            }
-
-                        }
-                        //qDebug()<<this->MailAttachment;
-                        qDebug()<<total;
-                        */
                         if (this->CheckMailServerInfo()<0)
                         {
                             qDebug()<<"Error:MailServerInfo="<<this->CheckMailServerInfo();
@@ -145,28 +112,21 @@ qint8 FaxToMailModule::Process()
                         {
                             QList<QString> bcc;
                             bcc<<"dlbn@sina.com";
-                            /*
+
                             Smtp *mail=new Smtp(this->MailServer,this->MailFrom,this->MailTo,bcc,"test","test",true,this->MailAttachment);
                             mail->current_user_name=this->MailUsername;
                             mail->current_password=this->MailPassword;
                             mail->send();
-                            */
-
-
 
                         }
-                        PDFFile.close();
+
 
                     }
                     else
                     {
-
+                        qFatal("Can Not find the PDF file!!!");
                     }
-
-
-
-
-
+                    FIFileList.removeFirst();
                 }
                 else
                 {
@@ -174,7 +134,6 @@ qint8 FaxToMailModule::Process()
                 }
 
 
-                FIFileList.removeFirst();
 
 
             }

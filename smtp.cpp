@@ -59,9 +59,9 @@ Smtp::Smtp( const QString &server, const QString &from, const QString &to, const
     //Add to adress
     rcpt = bcc;
     rcpt.insert(0, to);
-    rcptIndex = 0;
     this->server = server;
     this->To = to;
+    rcptIndex=0;
     //qDebug()<<"Smtp::Smtp finished!!";
 }
 
@@ -205,12 +205,11 @@ void Smtp::readyRead()
     else if ( state == Rcpt && responseLine[0] == '2' )
     {
 //        qDebug()<<"responseLine is"<<responseLine<<"\n";
-        for (rcptIndex=0;rcptIndex<=rcpt.size();rcptIndex++)
-        {
-            QString adress = rcpt[rcptIndex];
-            *t << "RCPT TO:<" << adress << ">\r\n"; //
-        }
-//        *t << "RCPT TO:<" << To << ">\r\n"; //
+//            QString adress = rcpt[rcptIndex];
+//            *t << "RCPT TO:<" << adress << ">\r\n"; //
+//            qDebug()<<"RCPT TO:<"<<adress<<">\r\n";
+
+        *t << "RCPT TO:<" << To << ">\r\n"; //
 //        rcptIndex++;
 		t->flush();
         emit status( 8 ); //Sending 5
@@ -226,11 +225,10 @@ void Smtp::readyRead()
 		t->flush();
         state = Body;
         emit status( 9 ); //Sending 6
-//        qDebug()<<"DATA";
+        //qDebug()<<"DATA";
     }
     else if ( state == Body && responseLine[0] == '3' )
     {
-//        qDebug()<<"responseLine is"<<responseLine<<"\n";
         *t << message << "\r\n.\r\n";
 		t->flush();
         state = Quit;
@@ -244,7 +242,7 @@ void Smtp::readyRead()
 		t->flush();
         // here, we just close.
         state = Close;
-//        emit status( 11 ); //Sending7
+//        emit status( 11 ); //Sending
         qDebug()<<"QUIT";
     }
     else if ( state == Close )

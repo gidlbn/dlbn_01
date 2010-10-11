@@ -257,10 +257,14 @@ void Smtp::readyRead()
     {
         // something broke.
         qDebug()<<"responseLine is"<<responseLine<<"\n";
-        //qDebug()<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
         QMessageBox::warning( 0, tr( "Qt Mail Example" ), tr( "Unexpected reply from SMTP server:\n\n" ) + response );
+        *t << "QUIT\r\n";
+                t->flush();
+        // here, we just close.
         emit status(-1);
-        socket->close();
+        state = Close;
+//        emit status( 11 ); //Sending
+        qDebug()<<"QUIT";
     }
     response = "";
 }

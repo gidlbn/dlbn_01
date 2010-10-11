@@ -8,6 +8,12 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += Base64.h faxtomailmodule.h mainwindow.h smtp.h
+HEADERS += Base64.h faxtomailmodule.h mainwindow.h smtp.h \
+    mailhandle.h \
+    Pop3Client.h \
+    systemsource.h
 FORMS += mainwindow.ui
-SOURCES += Base64.cpp faxtomailmodule.cpp main.cpp mainwindow.cpp smtp.cpp
+SOURCES += Base64.cpp faxtomailmodule.cpp main.cpp mainwindow.cpp smtp.cpp \
+    mailhandle.cpp \
+    Pop3Client.cpp \
+    systemsource.cpp

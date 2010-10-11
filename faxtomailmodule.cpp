@@ -9,14 +9,17 @@
 //#include <QTest>
 #include <QPainter>
 #include <QPrintPreviewDialog>
+#include <QSemaphore>
+#include "systemsource.h"
 
-FaxToMailModule::FaxToMailModule(QWidget *parent) :
+FaxToMailModule::FaxToMailModule(SystemSource *SysS,QWidget *parent) :
     QWidget(parent)
 {
     MailServer="smtp.sogou.com";
     MailPassword="so123456";
     MailUsername="fax_test@sogou.com";
     MailFrom="fax_test@sogou.com";
+    this->SysS=SysS;
     FaxToMailTimer.setSingleShot(true);
     connect(&FaxToMailTimer, SIGNAL(timeout()), this, SLOT(Process()));
     FaxToMailTimer.start(1*1000);
@@ -80,9 +83,6 @@ qint8 FaxToMailModule::Process()
                         qWarning("failed to open file, is it writable?");
                         return 1;
                    }
-
-                   //QPixmap pixmapToShow = QPixmap::fromImage( Image.scaled(size(), Qt::KeepAspectRatio) );
-                   //painter.drawPixmap(0,0, pixmapToShow);
                    painter.drawImage(0,0,Image);
                    /*
                    QFont font("Times",50);
@@ -113,12 +113,11 @@ qint8 FaxToMailModule::Process()
                             QList<QString> bcc;
                             bcc<<"dlbn@sina.com";
 
-                            Smtp *mail=new Smtp(this->MailServer,this->MailFrom,this->MailTo,bcc,"test","test",true,this->MailAttachment);
+                            Smtp *mail=new Smtp(this->MailServer,this->MailFrom,this->MailTo,bcc,"You have a fax !!!!!","You got a fax!!!",true,this->MailAttachment);
                             mail->current_user_name=this->MailUsername;
                             mail->current_password=this->MailPassword;
                             mail->send();
-
-
+                            mail->~Smtp();
                         }
 
 

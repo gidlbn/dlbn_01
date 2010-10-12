@@ -29,11 +29,11 @@ void MailHandle::Process()
         QString top,msgid,msg;
         QPair<QString,int> uIdList;
         qint8 tmp;
-        this->pop3client.GetMsgList("number",uIdList);
+        //this->pop3client.GetMsgList("1",uIdList);
         //qDebug() <<"hehe "<< uIdList.first<<" "<<uIdList.second;
-        for (tmp=0;tmp<=number;tmp++)
+        for (tmp=1;tmp<=number;tmp++)
         {
-            this->pop3client.GetMessage("tmp",msg);
+            this->pop3client.GetMessage(QString::number(tmp),msg);
             qDebug() <<"mesginfo==="<<msg<<"\n\n\n";
             QByteArray msgarray = msg.toLatin1();
             char *c_msg = msgarray.data();

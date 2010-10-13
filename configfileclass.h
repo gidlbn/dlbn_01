@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QFile>
 #include <QDomDocument>
+#include <QSemaphore>
 
 class ConfigFileClass : public QWidget
 {
@@ -15,7 +16,19 @@ public:
     int errorLine;
     int errorColumn;
     QDomDocument configDoc;
-    int openFile(QFile *configFilePath);
+    QSemaphore *ConfigFileSep;
+    int readFile(QFile *configFilePath,QSemaphore *ConfigFileSep);
+    int writeFile();
+    int searchConfigInfo(QString configName,QString *value);
+    int addConfigInfo(QString configName,QString value);
+    int replaceConfigInfo(QString configName,QString value);
+    int deleteConfigInfo(QString configName);
+    int addMailInfo(QString id,QString mailAddr,QString password);
+    int searchMailInfo(QString id,QString *mailAddr,QString *password);
+    int deleteMailInfo(QString id);
+    int replaceMailInfo(QString id,QString mailAddr,QString password);
+
+
 signals:
 
 public slots:

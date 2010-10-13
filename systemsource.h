@@ -12,7 +12,7 @@ class SystemSource : public QWidget
 public:
     explicit SystemSource(QWidget *parent = 0);
     QSemaphore *MailSendSep;
-    QSemaphore *ConfigFileWriteableSep;
+    QSemaphore *ConfigFileSep;
     QFile ConfigFile;
     QFile LogFile;
     QDir MailRecordFolder;

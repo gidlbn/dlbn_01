@@ -34,7 +34,7 @@ void MailHandle::Process()
         for (tmp=1;tmp<=number;tmp++)
         {
             this->pop3client.GetMessage(QString::number(tmp),msg);
-            qDebug() <<"mesginfo==="<<msg<<"\n\n\n";
+            qDebug() <<"=====mesginfo====\n"<<msg<<"\n\n\n";
             QByteArray msgarray = msg.toLatin1();
             char *c_msg = msgarray.data();
             QFile MailFile;
@@ -42,7 +42,7 @@ void MailHandle::Process()
             MailFile.open(QIODevice::ReadWrite|QIODevice::Text);
             MailFile.write(c_msg);
             MailFile.close();
-
+            readMail(msg);
         }
 
         this->pop3client.Quit();
@@ -50,6 +50,40 @@ void MailHandle::Process()
 
 
     //this->MailHandleTimer.start(5*1000);
+}
+
+int MailHandle::readMail(QString srcS)
+{
+    int ret=0;
+    QString testS,targetS;
+    while(ret>=0)
+    {
+        testS="Content-Type: text";
+        ret=srcS.indexOf(testS);
+        qDebug()<<"Check Content-Type: text"<<ret;
+        if (ret>=0)
+        {
+            srcS=srcS.right(srcS.count()-ret-testS.count());
+            //qDebug()<<tmpS1;
+            testS="\r\n\r\n";
+            ret=srcS.indexOf(testS);
+            qDebug()<<"Check \\r\\n\\r\\n text begin"<<ret;
+            srcS=srcS.right(srcS.count()-ret-testS.count());
+            ret=srcS.indexOf(testS);
+            qDebug()<<"Check \\r\\n\\r\\n text end"<<ret;
+            if (ret>=0)
+            {
+                targetS=srcS.left(ret);
+                qDebug()<<targetS;
+                QByteArray tmpB =targetS.toAscii();
+                targetS = QString(QByteArray::fromBase64(tmpB));
+                qDebug()<<targetS;
+                srcS=srcS.right(srcS.count()-ret-testS.count());
+            }
+
+        }
+    }
+    return true;
 }
 
 

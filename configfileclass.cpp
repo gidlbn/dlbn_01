@@ -12,14 +12,20 @@ int ConfigFileClass::readFile(QFile *configFile,QSemaphore *ConfigFileSep)
     int ret=true;
     this->configFile=configFile;
     this->ConfigFileSep=ConfigFileSep;
-    if(!this->configFile->open(QIODevice::ReadWrite|QIODevice::Text|QIODevice::Unbuffered))return false;
+    this->ConfigFileSep->acquire();
+    if(!this->configFile->open(QIODevice::ReadWrite|QIODevice::Text|QIODevice::Unbuffered))
+    {
+        this->ConfigFileSep->release();
+        return false;
+    }
     if(!this->configDoc.setContent(this->configFile, false, &errorStr, &errorLine, &errorColumn))
     {
         this->configFile->close();
         qDebug()<<"setContent file error!!";
+        this->ConfigFileSep->release();
         return false;
     }
-    this->ConfigFileSep->acquire();
+
     this->configFile->close();
     return ret;
 

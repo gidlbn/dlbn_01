@@ -5,6 +5,7 @@
 #include <QSemaphore>
 #include <QFile>
 #include <QDir>
+#include "configfileclass.h"
 
 class SystemSource : public QWidget
 {
@@ -16,6 +17,7 @@ public:
     QFile ConfigFile;
     QFile LogFile;
     QDir MailRecordFolder;
+    ConfigFileClass configFile;
 
 
 signals:

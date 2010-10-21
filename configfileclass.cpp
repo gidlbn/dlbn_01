@@ -108,6 +108,8 @@ int ConfigFileClass::searchMailInfo(QString id,QString *mailAddr,QString *passwo
 
 
 
+
+
 int ConfigFileClass::addMailInfo(QString id,QString mailAddr,QString password)
 {
     QString ls,ls2;

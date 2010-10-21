@@ -16,6 +16,7 @@ public:
     Pop3Client pop3client;
     SystemSource *SysS;
     QString Pop3Server,Pop3User,Pop3Password;
+
 private:
     int readMail(QString srcS);
 

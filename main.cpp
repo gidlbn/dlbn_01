@@ -6,6 +6,7 @@
 #include "systemsource.h"
 #include "mailhandle.h"
 #include "configfileclass.h"
+#include "comhandle.h"
 
 int main(int argc, char *argv[])
 {
@@ -25,8 +26,8 @@ int main(int argc, char *argv[])
     //configFile.replaceMailInfo("002","dlbn@sina.com","121212");
     //configFile.searchMailInfo("001",&test,&test2);
     //configFile.deleteMailInfo("001");
-    //configFile.writeFile();
-    MailHandle MailHandleProcess(&SysS);
+    configFile.writeFile();
+    //MailHandle MailHandleProcess(&SysS);
     //FaxToMailModule FaxToMailProcess(&SysS);
     /*
     int tmpI1=0;
@@ -58,6 +59,8 @@ int main(int argc, char *argv[])
         }
     }
     */
+
+    ComHandle comHandle(&SysS);
 
     return a.exec();
 }

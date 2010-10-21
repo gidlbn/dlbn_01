@@ -12,10 +12,18 @@ HEADERS += Base64.h faxtomailmodule.h mainwindow.h smtp.h \
     mailhandle.h \
     Pop3Client.h \
     systemsource.h \
-    configfileclass.h
+    configfileclass.h \
+    qextserialport.h \
+    qextserialbase.h \
+    posix_qextserialport.h \
+    comhandle.h
 FORMS += mainwindow.ui
 SOURCES += Base64.cpp faxtomailmodule.cpp main.cpp mainwindow.cpp smtp.cpp \
     mailhandle.cpp \
     Pop3Client.cpp \
     systemsource.cpp \
-    configfileclass.cpp
+    configfileclass.cpp \
+    qextserialport.cpp \
+    qextserialbase.cpp \
+    posix_qextserialport.cpp \
+    comhandle.cpp

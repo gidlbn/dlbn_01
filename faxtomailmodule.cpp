@@ -36,8 +36,8 @@ bool FaxToMailModule::FaxIdentify(QString FilePath,QString &Addr)
 qint8 FaxToMailModule::Process()
 {
         qDebug()<<"FaxToMailProcess Start\n";
-        this->FIFolder.setPath("/root/chuanzhen/faxtransfer/faxinfo");//FaxInfoFolder
-        this->FDFolder.setPath("/root/chuanzhen/faxtransfer/faxdate");//FaxDateFolder
+        this->FIFolder.setPath(this->SysS->faxInfoFolderPath);//FaxInfoFolder
+        this->FDFolder.setPath(this->SysS->faxDataFolderPath);//FaxDateFolder
         this->FileFilter.clear();
         this->FileFilter.append("*.FI");
         this->FIFolder.setNameFilters(this->FileFilter);
@@ -56,86 +56,88 @@ qint8 FaxToMailModule::Process()
                 QFile FIfile(FIFilePath);
                 if (!FIfile.open(QIODevice::ReadWrite|QIODevice::Text)) return -1;
                 QByteArray tmp;
-                tmp=FIfile.readAll();
-                QStringList FIfileinfo;
-                FIfileinfo=QString(tmp).split("::");
-                qDebug()<<FIfileinfo;
-                FIfile.close();
-                FDFilePath.clear();
-                FDFilePath.append(FDFolder.absolutePath()+"/"+FIfileinfo.first());
-                qDebug()<<FDFilePath;
-                Re=FaxIdentify(FDFilePath,MailTo);
-                if (Re==true)
+                tmp=FIfile.readLine();
+                qDebug()<<QString(tmp);
+                while(!QString(tmp).isEmpty())
                 {
-                   qDebug()<<"begin to print\n";
-
-                   QPrinter printer;
-                   printer.setOutputFormat(QPrinter::PdfFormat);
-                   printer.setOrientation(QPrinter::Landscape);
-                   printer.setPageSize(QPrinter::A2);
-                   printer.setOutputFileName("/tmp/nonwritable.pdf");
-                   QPainter painter;
-                   QImage Image;
-                   Image.load(FDFilePath);
-                   qDebug()<<Image.size();
-                   if (! painter.begin(&printer))
-                   { // failed to open file
-                        qWarning("failed to open file, is it writable?");
-                        return 1;
-                   }
-                   painter.drawImage(0,0,Image);
-                   /*
-                   QFont font("Times",50);
-                   QString text = tr("Hello World");
-                   painter.setPen(Qt::blue);
-                   painter.setFont(font);
-                   painter.drawText(QRect(0,0, 1000, 100), text);
-                    */
-                   painter.end();
-
-                    QFile PDFFile("/tmp/nonwritable.pdf");
-                    if(PDFFile.open(QIODevice::ReadOnly))
+                    //qDebug()<<QString(tmp);
+                    FDFilePath.clear();
+                    FDFilePath.append(tmp);
+                    FDFilePath.remove("\n");
+                    //qDebug()<<FDFilePath;
+                    Re=FaxIdentify(FDFilePath,MailTo);
+                    if (Re==true)
                     {
+                       qDebug()<<"begin to print\n";
 
+                       QPrinter printer;
+                       printer.setOutputFormat(QPrinter::PdfFormat);
+                       printer.setOrientation(QPrinter::Landscape);
+                       printer.setPageSize(QPrinter::A2);
+                       printer.setOutputFileName("/tmp/nonwritable.pdf");
+                       QPainter painter;
+                       QImage Image;
+                       Image.load(FDFilePath);
+                       qDebug()<<Image.size();
+                       if (! painter.begin(&printer))
+                       { // failed to open file
+                            qWarning("failed to open file, is it writable?");
+                            return -1;
+                       }
+                       painter.drawImage(0,0,Image);
+                       /*
+                       QFont font("Times",50);
+                       QString text = tr("Hello World");
+                       painter.setPen(Qt::blue);
+                       painter.setFont(font);
+                       painter.drawText(QRect(0,0, 1000, 100), text);
+                        */
+                       painter.end();
 
-                        QByteArray ls;
-                        ls=PDFFile.readAll();
-                        PDFFile.close();
-                        //qDebug()<<"File Size="<<ls.size();
-                        this->MailAttachment=ls.toBase64();
-                        //qDebug()<<ls.toBase64();
-                        if (this->CheckMailServerInfo()<0)
+                        QFile PDFFile("/tmp/nonwritable.pdf");
+                        if(PDFFile.open(QIODevice::ReadOnly))
                         {
-                            qDebug()<<"Error:MailServerInfo="<<this->CheckMailServerInfo();
+
+
+                            QByteArray ls;
+                            ls=PDFFile.readAll();
+                            PDFFile.close();
+                            //qDebug()<<"File Size="<<ls.size();
+                            this->MailAttachment=ls.toBase64();
+                            //qDebug()<<ls.toBase64();
+                            if (this->CheckMailServerInfo()<0)
+                            {
+                                qDebug()<<"Error:MailServerInfo="<<this->CheckMailServerInfo();
+                            }
+                            else
+                            {
+                                QList<QString> bcc;
+                                bcc<<"dlbn@sina.com";
+
+                                Smtp *mail=new Smtp(this->MailServer,this->MailFrom,this->MailTo,bcc,"You have a fax !!!!!","You got a fax!!!",true,this->MailAttachment);
+                                mail->current_user_name=this->MailUsername;
+                                mail->current_password=this->MailPassword;
+                                //qDebug()<<"ready,begin to sent mail";
+                                mail->send();
+                                //mail->~Smtp();
+                            }
+
+
                         }
                         else
                         {
-                            QList<QString> bcc;
-                            bcc<<"dlbn@sina.com";
-
-                            Smtp *mail=new Smtp(this->MailServer,this->MailFrom,this->MailTo,bcc,"You have a fax !!!!!","You got a fax!!!",true,this->MailAttachment);
-                            mail->current_user_name=this->MailUsername;
-                            mail->current_password=this->MailPassword;
-                            mail->send();
-                            mail->~Smtp();
+                            qFatal("Can Not find the PDF file!!!");
                         }
-
 
                     }
                     else
                     {
-                        qFatal("Can Not find the PDF file!!!");
+
                     }
-                    FIFileList.removeFirst();
+                    tmp=FIfile.readLine();
                 }
-                else
-                {
-
-                }
-
-
-
-
+                FIfile.close();
+                FIFileList.removeFirst();
             }
     //}
     //FaxToMailTimer.start(3*1000);

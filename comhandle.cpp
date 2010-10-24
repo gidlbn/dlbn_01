@@ -47,7 +47,7 @@ qint8 ComHandle::openSerialPort()
     return true;
 }
 
-void ComHandle::Process()
+qint8 ComHandle::Process()
 {
     qDebug()<<"ComProcess!!";
 
@@ -59,16 +59,29 @@ void ComHandle::Process()
         {
             QDateTime datetime;
             QString shellCmd="fax r -v ";
-            QString faxDataFileName,faxInfoFileName;
+            QString dateStamp;
 
             qDebug()<<"read:"<<this->serialPort->bytesAvailable()<<"bytes";
             QByteArray temp = this->serialPort->readAll();
             qDebug()<<"info:"<<QString(temp)<<"\n";
-
-            shellCmd.append();
-
-            QProcess::execute(shellCmd);
+            dateStamp.append(datetime.currentDateTime().toString("yyyy-MM-dd-hh-mm-ss"));
+            shellCmd.append(this->SysS->faxDataFolderPath+"/"+dateStamp+".FD >/tmp/"+dateStamp+".log");
+            qDebug()<<"shellcmd:"<<shellCmd<<"\n";
             serialPort->close();
+            QProcess::execute(shellCmd);
+            shellCmd.clear();
+            shellCmd.append("ls "+this->SysS->faxDataFolderPath+"/"+dateStamp+".FD* ">this->SysS->faxInfoFolderPath+"/"+dateStamp+".FI");
+            /*
+            QFile faxInfoFile(this->SysS->faxInfoFolderPath+"/"+dateStamp+".FI");
+            if (!faxInfoFile.open(QIODevice::ReadWrite|QIODevice::Text)) return -1;
+            QTextStream tmp(&faxInfoFile);
+            tmp<<QString(dateStamp+".FD");
+            tmp<<"::68486004";
+            */
+
+
+
+
 
 
         }

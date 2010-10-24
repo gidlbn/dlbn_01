@@ -8,5 +8,7 @@ SystemSource::SystemSource(QWidget *parent) :
     this->MailSendSep=new QSemaphore(1);
     this->ConfigFileSep=new QSemaphore(1);
     this->MailRecordFolder.setPath("/root/MailRecord");
+    this->faxDataFolderPath="/root/FaxData";
+    this->faxInfoFolderPath="/root/FaxInfo";
     if (!this->MailRecordFolder.exists())this->MailRecordFolder.mkdir(this->MailRecordFolder.absolutePath());
 }

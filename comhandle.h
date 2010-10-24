@@ -19,7 +19,7 @@ public:
 signals:
 
 private slots:
-    void Process();
+    qint8 Process();
     qint8 openSerialPort();
 
 public slots:

@@ -18,6 +18,8 @@ public:
     QFile LogFile;
     QDir MailRecordFolder;
     ConfigFileClass configFile;
+    QString faxDataFolderPath;
+    QString faxInfoFolderPath;
 
 
 signals:

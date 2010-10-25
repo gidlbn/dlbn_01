@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     w.show();
     //MailHandle MailHandleProcess(&SysS);
     FaxToMailModule FaxToMailProcess(&SysS);
-    //ComHandle comHandle(&SysS);
+    ComHandle comHandle(&SysS);
 
     return a.exec();
 }

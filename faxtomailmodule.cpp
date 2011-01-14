@@ -28,7 +28,7 @@ FaxToMailModule::FaxToMailModule(SystemSource *SysS,QWidget *parent) :
 
 bool FaxToMailModule::FaxIdentify(QString FilePath,QString &Addr)
 {
-     Addr="dlbn126@126.com";
+     Addr="ruixuejishu@sina.com";
      return true;
 }
 
@@ -48,6 +48,7 @@ qint8 FaxToMailModule::Process()
         while (!FIFileList.isEmpty())
             {
                 QString FIFilePath;
+                int code;
                 //qDebug()<<FIFileList.first();
                 FIFilePath.clear();
                 FIFilePath.append(this->FIFolder.absolutePath()+"/"+FIFileList.first());
@@ -57,7 +58,9 @@ qint8 FaxToMailModule::Process()
                 if (!FIfile.open(QIODevice::ReadWrite|QIODevice::Text)) return -1;
                 QByteArray tmp;
                 tmp=FIfile.readLine();
-                qDebug()<<QString(tmp);
+                qDebug()<<"Identifycode="<<QString(tmp);
+
+                tmp=FIfile.readLine();
                 while(!QString(tmp).isEmpty())
                 {
                     //qDebug()<<QString(tmp);
@@ -73,7 +76,7 @@ qint8 FaxToMailModule::Process()
                        QPrinter printer;
                        printer.setOutputFormat(QPrinter::PdfFormat);
                        printer.setOrientation(QPrinter::Landscape);
-                       printer.setPageSize(QPrinter::A2);
+                       printer.setPageSize(QPrinter::B0);
                        printer.setOutputFileName("/tmp/nonwritable.pdf");
                        QPainter painter;
                        QImage Image;
@@ -120,6 +123,7 @@ qint8 FaxToMailModule::Process()
                                 //qDebug()<<"ready,begin to sent mail";
                                 mail->send();
                                 //mail->~Smtp();
+
                             }
 
 

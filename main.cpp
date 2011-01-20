@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     SystemSource SysS;
     w.show();
     //MailHandle MailHandleProcess(&SysS);
-    FaxToMailModule FaxToMailProcess(&SysS);
+    //FaxToMailModule FaxToMailProcess(&SysS);
     //ComHandle comHandle(&SysS);
 
     return a.exec();

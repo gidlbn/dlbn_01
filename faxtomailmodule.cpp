@@ -26,9 +26,15 @@ FaxToMailModule::FaxToMailModule(SystemSource *SysS,QWidget *parent) :
 }
 
 
-bool FaxToMailModule::FaxIdentify(QString FilePath,QString &Addr)
+bool FaxToMailModule::FaxIdentify(QString qcode,QString &Addr)
 {
-     Addr="ruixuejishu@sina.com";
+
+     if (qcode=="147") Addr="ruixuejishu@sina.com";
+
+     else if (qcode=="130") Addr="ruixuegufen@sina.com";
+
+     else Addr="ruixuegufen@sina.com";
+
      return true;
 }
 
@@ -47,8 +53,7 @@ qint8 FaxToMailModule::Process()
 
         while (!FIFileList.isEmpty())
             {
-                QString FIFilePath;
-                int code;
+                QString FIFilePath,qcode;
                 //qDebug()<<FIFileList.first();
                 FIFilePath.clear();
                 FIFilePath.append(this->FIFolder.absolutePath()+"/"+FIFileList.first());
@@ -58,8 +63,11 @@ qint8 FaxToMailModule::Process()
                 if (!FIfile.open(QIODevice::ReadWrite|QIODevice::Text)) return -1;
                 QByteArray tmp;
                 tmp=FIfile.readLine();
-                qDebug()<<"Identifycode="<<QString(tmp);
-
+                qDebug()<<"Identify code="<<QString(tmp);
+                //qcode=QString(tmp);
+                tmp=FIfile.readLine();
+                qDebug()<<"Identify Mailaddr="<<QString(tmp);
+                this->MailTo=QString(tmp);
                 tmp=FIfile.readLine();
                 while(!QString(tmp).isEmpty())
                 {
@@ -68,7 +76,7 @@ qint8 FaxToMailModule::Process()
                     FDFilePath.append(tmp);
                     FDFilePath.remove("\n");
                     //qDebug()<<FDFilePath;
-                    Re=FaxIdentify(FDFilePath,MailTo);
+                    //Re=FaxIdentify(qcode,MailTo);
                     if (Re==true)
                     {
                        qDebug()<<"begin to print\n";
@@ -138,13 +146,15 @@ qint8 FaxToMailModule::Process()
                     {
 
                     }
+
                     tmp=FIfile.readLine();
                 }
                 FIfile.close();
+                FIfile.remove(FIfile.fileName());
                 FIFileList.removeFirst();
             }
     //}
-    //FaxToMailTimer.start(3*1000);
+    FaxToMailTimer.start(3*1000);
     qDebug()<<"FaxToMailProcess End\n";
     return true;
 }

@@ -34,7 +34,7 @@ private slots:
 
 
 private:
-    bool FaxIdentify(QString FilePath,QString &Addr);
+    bool FaxIdentify(QString qcode,QString &Addr);
 
 };
 

@@ -20,6 +20,14 @@ public:
     ConfigFileClass configFile;
     QString faxDataFolderPath;
     QString faxInfoFolderPath;
+    QString configFilePath;
+    QString MAIL_USERNAME;
+    QString MAIL_ADDR;
+    QString MAIL_PASSWORD;
+    QString MAIL_POP3SERVER;
+    QString MAIL_SMTPSERVER;
+    QString MAIL_ADMINMAIL;
+    QString MAIL_ADMINPASSWORD;
 
 
 signals:

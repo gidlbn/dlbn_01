@@ -1,6 +1,7 @@
 #include "mailhandle.h"
 #include <QFile>
 #include <QDateTime>
+#include <QProcess>
 
 MailHandle::MailHandle(SystemSource *SysS,QWidget *parent) :
     QWidget(parent)
@@ -38,18 +39,22 @@ void MailHandle::Process()
             QByteArray msgarray = msg.toLatin1();
             char *c_msg = msgarray.data();
             QFile MailFile;
-            MailFile.setFileName(this->SysS->MailRecordFolder.absolutePath()+"/"+datetime.currentDateTime().toString("yyyy-MM-dd-hh-mm-ss"));
+            QString FilePath;
+            FilePath.append(this->SysS->MailRecordFolder.absolutePath()+"/"+datetime.currentDateTime().toString("yyyy-MM-dd-hh-mm-ss"));
+            MailFile.setFileName(FilePath);
             MailFile.open(QIODevice::ReadWrite|QIODevice::Text);
             MailFile.write(c_msg);
+            //readMail(msg);
             MailFile.close();
-            readMail(msg);
+            QProcess::execute("/root/readMail.sh"+FilePath);
+            this->pop3client.Delete(QString::number(tmp));
         }
 
-        this->pop3client.Quit();
+
     }
 
-
-    //this->MailHandleTimer.start(5*1000);
+    this->pop3client.Quit();
+    this->MailHandleTimer.start(3*60*1000);
 }
 
 int MailHandle::readMail(QString srcS)

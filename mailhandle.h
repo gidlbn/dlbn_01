@@ -19,6 +19,7 @@ public:
 
 private:
     int readMail(QString srcS);
+    QFile MailFile;
 
 
 

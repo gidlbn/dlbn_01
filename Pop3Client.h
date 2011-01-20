@@ -38,7 +38,7 @@ class Pop3Client
 	protected:
 	
 	public:
-		Pop3Client(bool readOnly = true);
+                Pop3Client(bool readOnly = false);
 		void SetReadOnly(bool readOnly);
 		bool Connect(QString host="localhost",short unsigned  port=110);
 		bool Login(QString user, QString pwd);

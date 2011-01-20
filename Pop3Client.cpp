@@ -256,6 +256,7 @@ bool Pop3Client::GetUniqueIdList(QString msgId, QPair<QString,QString>& uIdList)
 }
 bool Pop3Client::Delete(QString msgId)
 {
+        qDebug() << "Pop3Client::Delete start";
 	if (readOnly)
 		return false;
 	QString res = doCommand("DELE "+msgId+"\r\n",false);
